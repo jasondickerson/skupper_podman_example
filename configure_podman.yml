@@ -1,0 +1,45 @@
+---
+- hosts: skupper_hosts
+  gather_facts: no
+  become: false
+
+  vars_files:
+    - vars/vault.yml
+
+  tasks:
+    - name: Perform Podman installation tasks
+      block:
+        - name: Install Podman
+          ansible.builtin.package:
+            name: podman
+            state: present
+
+        - name: Ensure subuid and subgid files exist
+          ansible.builtin.copy:
+            content: ""
+            dest: "/etc/{{ item }}"
+            force: false
+            owner: root
+            group: root
+            mode: '0644'
+          loop:
+            - subuid
+            - subgid
+
+        - name: Set subuids and subgids for user
+          ansible.builtin.lineinfile:
+            path: "/etc/{{ item }}"
+            regexp: "^{{ ansible_ssh_user }}:"
+            line: "{{ ansible_ssh_user }}:100000:65537"
+          loop:
+            - subuid
+            - subgid
+          register: update_subs
+
+      become: true
+
+    - name: Read subuid and subgid configuration into Podman
+      ansible.builtin.command:
+        cmd: "podman system migrate"
+      when: update_subs.changed
+        

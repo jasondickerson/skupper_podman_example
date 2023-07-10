@@ -1,0 +1,37 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    ingress_hosts:
+      - skupper1
+
+  tasks:
+    - name: Get Host IP Address
+      ansible.builtin.setup:
+        gather_subset:
+          - default_ipv4
+
+    - name: Create inventory directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0750'
+      loop:
+        - "{{ playbook_dir }}/inventory"
+        - "{{ playbook_dir }}/inventory/host_vars"
+
+    - name: Write ingress_hosts token files to inventory
+      ansible.builtin.include_tasks: 
+        file: write_ingress_host_inventory.yml
+      loop: "{{ ingress_hosts }}"
+      loop_control:
+        loop_var: ingress_host
+
+    - name: "Write {{ customer_name }} inventory file with port:{{ customer_port }}"
+      ansible.builtin.template:
+        src: templates/client.yml.j2
+        dest: "{{ playbook_dir }}/inventory/{{ customer_name }}.yml"
+        mode: '0640'
+

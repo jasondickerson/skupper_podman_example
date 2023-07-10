@@ -1,0 +1,27 @@
+---
+- name: Read in Token
+  ansible.builtin.slurp:
+    src: "files/{{ ingress_host }}_token"
+  register: token
+
+- name: Initialize token dictionary
+  ansible.builtin.set_fact:
+    token_dict: "{{ token.content | b64decode }}"
+
+- name: "Create {{ ingress_host }} inventory/host_vars directory"
+  ansible.builtin.file:
+    path: "{{ playbook_dir }}/inventory/host_vars/{{ ingress_host }}"
+    state: directory
+    mode: '0750'
+
+- name: "Create {{ ingress_host }} token variable file"
+  ansible.builtin.template:
+    src: templates/generatedToken.yml.j2
+    dest: "{{ playbook_dir }}/inventory/host_vars/{{ ingress_host }}/generatedToken.yml"
+
+- name: "Create {{ ingress_host }} inventory file"
+  ansible.builtin.template:
+    src: templates/host.yml.j2
+    dest: "{{ playbook_dir }}/inventory/{{ ingress_host }}.yml"
+
+

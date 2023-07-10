@@ -1,0 +1,7 @@
+all:
+  hosts:
+  children:
+    skupper_ingress_hosts:
+      hosts:
+        {{ ingress_host }}:
+

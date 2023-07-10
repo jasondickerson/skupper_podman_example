@@ -1,0 +1,22 @@
+all:
+  hosts:
+  children:
+    skupper_hosts:
+      hosts:
+        {{ customer_name }}:
+          ansible_host: {{ ansible_facts.default_ipv4.address }}
+          platform: podman
+          init:
+            ingress: none
+          links:
+            - host: skupper1
+          services:
+            {{ customer_name }}:
+              ports:
+                - {{ customer_port }}
+              targets:
+                - type: host
+                  name: host.containers.internal
+                  ports:
+                    - 80
+

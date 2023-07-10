@@ -1,0 +1,13 @@
+---
+services:
+  clienta:
+    ports:
+      - 8081
+    hostPorts:
+      - 8081
+  clientb:
+    ports:
+      - 8082
+    hostPorts:
+      - 8082
+

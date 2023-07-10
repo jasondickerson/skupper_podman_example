@@ -1,0 +1,13 @@
+all:
+  hosts:
+  children:
+    skupper_hosts:
+      hosts:
+        {{ skupper_host }}:
+          ansible_host: {{ ansible_facts.default_ipv4.address }}
+          platform: podman
+          init:
+            ingressHosts:
+              - {{ ansible_facts.default_ipv4.address }}
+          token_output_file: {{ skupper_host }}_token
+
