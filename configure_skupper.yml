@@ -29,6 +29,7 @@
           ansible.posix.firewalld:
             port: "{{ item }}/tcp"
             permanent: true
+            immediate: true
             state: enabled
           loop: "{{ services.values() | list | map(attribute='ports') | flatten + [ 55671 ] }}"
           when: init['ingressHosts'] is defined and (init['ingressHosts'] | length > 0)
