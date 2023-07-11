@@ -15,7 +15,7 @@ I have the following network configuration:
       - clienta 192.168.122.150:80
       - clientb 192.168.122.71:80
 
-The phyical network devices cannot access the web sites running on the libvirt VM's.  I would like for skupper1 to be able to reach the web sites on the 2 libvirt VM's
+The physical network devices cannot access the web sites running on the libvirt VM's.  I would like for skupper1 to be able to reach the web sites on the 2 libvirt VM's
 
 ![Skupper Demonstration Lab Configuration](/Skupper_Podman_Demo.png)
 
@@ -49,7 +49,7 @@ Update the ansible-navigator line in the run_config.bash script to have the name
 
 For my purposes I would like to version control the skupper command I am using.  As such, download the desired version of skupper and place the extracted skupper command in the playbook directory under files on all 3 hosts.  I used this version of skupper:  
 
-https://github.com/skupperproject/skupper/releases/download/1.4.1/skupper-cli-1.4.1-linux-amd64.tgz
+<https://github.com/skupperproject/skupper/releases/download/1.4.1/skupper-cli-1.4.1-linux-amd64.tgz>
 
 ### What needs to be configured
 
@@ -135,13 +135,13 @@ Now Skupper is running on all 3 systems.
 
 On the skupper host, skupper1, you can access the clienta and clientb web sites as follows:
 
-- clienta website: http://0.0.0.0:8081
-- clientb website: http://0.0.0.0:8082
+- clienta website: <http://0.0.0.0:8081>
+- clientb website: <http://0.0.0.0:8082>
 
 Further, anything that can connect to skupper1, 192.168.1.3, can connect to the web sites on clienta and clientb.  For instance, the clienta and clientb websites are reachable from any host on the 192.168.1.0/24 network at the following:
 
-- clienta website: http://192.168.1.3:8081
-- clinetb website: http://192.168.1.3:8082
+- clienta website: <http://192.168.1.3:8081>
+- clientb website: <http://192.168.1.3:8082>
 
 Without the Skupper environment running, nothing on the physical network would be able to reach the web sites on the libvirt network.
 
