@@ -1,6 +1,7 @@
 ---
-- hosts: skupper_hosts
-  gather_facts: no
+- name: Configure Podman
+  hosts: skupper_hosts
+  gather_facts: false
   become: false
 
   vars_files:
@@ -8,6 +9,7 @@
 
   tasks:
     - name: Perform Podman installation tasks
+      become: true
       block:
         - name: Install Podman
           ansible.builtin.package:
@@ -36,10 +38,8 @@
             - subgid
           register: update_subs
 
-      become: true
-
     - name: Read subuid and subgid configuration into Podman
       ansible.builtin.command:
         cmd: "podman system migrate"
+      changed_when: true
       when: update_subs.changed
-        

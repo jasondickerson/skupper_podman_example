@@ -23,5 +23,3 @@
   ansible.builtin.template:
     src: templates/host.yml.j2
     dest: "{{ playbook_dir }}/inventory/{{ ingress_host }}.yml"
-
-

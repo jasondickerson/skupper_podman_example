@@ -1,7 +1,8 @@
 ---
-- hosts: localhost
+- name: Create Client inventory
+  hosts: localhost
   connection: local
-  gather_facts: no
+  gather_facts: false
 
   tasks:
     - name: Get Host IP Address
@@ -17,7 +18,7 @@
       loop:
         - "{{ playbook_dir }}/inventory"
         - "{{ playbook_dir }}/inventory/host_vars"
-        
+
     - name: Find Skupper Host Token Files
       ansible.builtin.find:
         paths: "{{ playbook_dir }}/files"
@@ -26,19 +27,18 @@
 
     - name: Create Skupper Host List
       ansible.builtin.set_fact:
-        ingress_hosts: "{{ ( ingress_hosts if ingress_hosts is defined else [] | list ) + [ item.split('/')[-1].split('_')[0] ] }}"
+        ingress_hosts: "{{ (ingress_hosts if ingress_hosts is defined else [] | list) + [item.split('/')[-1].split('_')[0]] }}"
       loop: "{{ host_token_files.files | map(attribute='path') }}"
 
     - name: Write ingress_hosts token files to inventory
-      ansible.builtin.include_tasks: 
+      ansible.builtin.include_tasks:
         file: write_ingress_host_inventory.yml
       loop: "{{ ingress_hosts }}"
       loop_control:
         loop_var: ingress_host
 
-    - name: "Write {{ customer_name }} inventory file with port:{{ customer_port }}"
+    - name: "Write {{ customer_name }} inventory file with port {{ customer_port }}"
       ansible.builtin.template:
         src: templates/client.yml.j2
         dest: "{{ playbook_dir }}/inventory/{{ customer_name }}.yml"
         mode: '0640'
-

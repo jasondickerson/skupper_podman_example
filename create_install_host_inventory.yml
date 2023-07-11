@@ -1,7 +1,8 @@
 ---
-- hosts: localhost
+- name: Create Host Install inventory
+  hosts: localhost
   connection: local
-  gather_facts: no
+  gather_facts: false
 
   tasks:
     - name: Get Host IP Address
@@ -23,9 +24,10 @@
       ansible.builtin.copy:
         src: files/customer_services.yml
         dest: "{{ playbook_dir }}/inventory/host_vars/{{ skupper_host }}/services.yml"
+        mode: '0640'
 
     - name: "Create {{ skupper_host }} inventory file"
       ansible.builtin.template:
         src: templates/install_host.yml.j2
         dest: "{{ playbook_dir }}/inventory/{{ skupper_host }}.yml"
- 
+        mode: '0640'

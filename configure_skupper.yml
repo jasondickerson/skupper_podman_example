@@ -1,12 +1,14 @@
 ---
-- hosts: skupper_hosts
-  gather_facts: no
+- name: Configure Skupper
+  hosts: skupper_hosts
+  gather_facts: false
 
   vars_files:
     - vars/vault.yml
 
   tasks:
     - name: Perform Skupper installation tasks
+      become: true
       block:
         - name: Check for skupper installation
           ansible.builtin.stat:
@@ -22,26 +24,21 @@
             mode: '0755'
           when: not skupper_binary.stat.exists
 
-        - debug:
-            var: services.values() | list | map(attribute='ports') | flatten + [ 55671 ]
-
         - name: Open Firewall Rules for skupper ingress
           ansible.posix.firewalld:
             port: "{{ item }}/tcp"
             permanent: true
             immediate: true
             state: enabled
-          loop: "{{ services.values() | list | map(attribute='ports') | flatten + [ 55671 ] }}"
+          loop: "{{ services.values() | list | map(attribute='ports') | flatten + [55671] }}"
           when: init['ingressHosts'] is defined and (init['ingressHosts'] | length > 0)
-
-      become: true
 
     - name: Ensure User skupper_config directory exists
       ansible.builtin.file:
         path: skupper_config
         state: directory
         mode: '0750'
- 
+
     - name: Store Client Token file
       ansible.builtin.copy:
         content: "{{ hostvars[item['host']]['generatedToken'] }}"
@@ -59,11 +56,12 @@
     - name: Ensure linger is enabled for the user
       ansible.builtin.command:
         cmd: "loginctl enable-linger"
+      changed_when: true
       register: enable_linger
       when: not user_linger_file.stat.exists
 
     - name: Gather User facts
-      setup:
+      ansible.builtin.setup:
         gather_subset:
           - distribution
 
@@ -71,11 +69,12 @@
       ansible.builtin.systemd:
         name: podman.socket
         state: started
-        enabled: yes
+        enabled: true
         scope: user
       when: ansible_facts.distribution == 'RedHat'
 
     - name: Start Podman API on Fedora if needed
+      when: ansible_facts.distribution == 'Fedora'
       block:
         - name: Get UID
           ansible.builtin.command:
@@ -94,10 +93,9 @@
           register: podman_api_pid
           async: 5
           poll: 0
+          changed_when: true
           when: not podman_socket.stat.exists
 
-      when: ansible_facts.distribution == 'Fedora'
-        
     - name: Configure Skupper
       ansible.builtin.import_role:
         name: skupper.network.skupper
@@ -107,5 +105,5 @@
         content: "{{ generatedToken }}"
         dest: "skupper_config/{{ token_output_file }}"
         backup: true
+        mode: '0640'
       when: token_output_file is defined and token_output_file | length() > 0
-
