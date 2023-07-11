@@ -17,7 +17,7 @@ I have the following network configuration:
 
 The physical network devices cannot access the web sites running on the libvirt VM's.  I would like for skupper1 to be able to reach the web sites on the 2 libvirt VM's
 
-![Skupper Demonstration Lab Configuration](/Skupper_Podman_Demo.png)
+![Skupper Demonstration Lab Configuration](/images/Skupper_Podman_Demo.png)
 
 ## Prerequisites
 
