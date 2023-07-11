@@ -3,10 +3,6 @@
   connection: local
   gather_facts: no
 
-  vars:
-    ingress_hosts:
-      - skupper1
-
   tasks:
     - name: Get Host IP Address
       ansible.builtin.setup:
@@ -21,6 +17,17 @@
       loop:
         - "{{ playbook_dir }}/inventory"
         - "{{ playbook_dir }}/inventory/host_vars"
+        
+    - name: Find Skupper Host Token Files
+      ansible.builtin.find:
+        paths: "{{ playbook_dir }}/files"
+        patterns: '*_token'
+      register: host_token_files
+
+    - name: Create Skupper Host List
+      ansible.builtin.set_fact:
+        ingress_hosts: "{{ ( ingress_hosts if ingress_hosts is defined else [] | list ) + [ item.split('/')[-1].split('_')[0] ] }}"
+      loop: "{{ host_token_files.files | map(attribute='path') }}"
 
     - name: Write ingress_hosts token files to inventory
       ansible.builtin.include_tasks: 

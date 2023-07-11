@@ -103,16 +103,6 @@ Once completed, your skupper host will be online!
 
 Next, collect the skupper1_token file from ~/skupper_config/skupper1_token and place in the Ansible playbook directory under files on both clienta and clientb.  This provides the host information the Skupper clients will connect to.
 
-Also, update the list of ingress_hosts in create_customer_inventory.yml as so:
-
-    ...
-    vars:
-      ingress_hosts:
-        - skupper1
-    ...
-
-( If I have a chance I may update this to automatically be loaded by finding the host_token files.)
-
 Now to configure the clients:
 
 On clienta run the following:
