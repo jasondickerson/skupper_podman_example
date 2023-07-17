@@ -41,13 +41,45 @@ Install Ansible on all 3 hosts.  If installing via pip use the following while l
 
 #### Custom Ansible Execution Environment with the skupper.network community collection
 
-Next, create a custom Ansible Execution Environment container, with the skupper.network collection.  This EE will need to be present in the podman registry for the unprivileged user.  The creation of this EE is outside the scope of this example, but required for it to work.  ( If I have time I may update to include an open source EE container image for use. )
+Next, create a custom Ansible Execution Environment container, with the skupper.network collection.  This EE will need to be present in the podman registry for the unprivileged user on all 3 hosts.
+
+Create a directory for the execution environment definition files.  I used /home/jdicke/exec_env/skupper-ee.  In this directory you need 2 files:
+
+requirements.yml:  Define the Required Collections
+
+    ---
+    collections:
+      - name: skupper.network
+
+execution-environment.yml: Define the Execution Environment
+
+    ---
+    version: 3
+
+    dependencies:
+      galaxy: requirements.yml
+
+    images:
+      base_image:
+        name: quay.io/ansible/awx-ee:latest
+
+Run the following command in the directory to build the execution environment:
+
+    # ansible-builder build --verbosity 3 --prune-images --tag ee-skupper:1.1
+
+To copy the execution environment to another server, first save the container to a tar file using:
+
+    # podman save --output ee_skupper_1.1.tar localhost/ee-skupper:1.1
+
+To import the container tar file on another server, use:
+
+    # podman load --input ee_skupper_1.1.tar
 
 Update the ansible-navigator line in the run_config.bash script to have the name of your execution environment.  I chose localhost/ee-skupper:1.1.  
 
 #### Skupper CLI
 
-For my purposes I would like to version control the skupper command I am using.  As such, download the desired version of skupper and place the extracted skupper command in the playbook directory under files on all 3 hosts.  I used this version of skupper:  
+For my purposes I would like to version control the skupper command I am using.  Also, I am not assuming the clients will have access to download the skupper file from the Internet.  As such, download the desired version of skupper and place the extracted skupper command in the playbook directory under files on all 3 hosts.  I used this version of skupper:  
 
 <https://github.com/skupperproject/skupper/releases/download/1.4.1/skupper-cli-1.4.1-linux-amd64.tgz>
 
