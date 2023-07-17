@@ -169,7 +169,7 @@ Without the Skupper environment running, nothing on the physical network would b
 
 ## So What Just happened?  
 
-This example shows how to use ansible to dynamically create an Ansible inventory for a Skupper Host or Skupper Client and then configure it.  So Let's look at the commands that happen behind the scenes:
+This example shows how to use ansible to dynamically create an Ansible inventory for a Skupper Host or Skupper Client and then configure it using the skupper.network Ansible Collection.  So Let's look at the commands that happen behind the scenes:
 
 ### Host Configuration
 
