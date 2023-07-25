@@ -18,8 +18,10 @@
   ansible.builtin.template:
     src: templates/generatedToken.yml.j2
     dest: "{{ playbook_dir }}/inventory/host_vars/{{ ingress_host }}/generatedToken.yml"
+    mode: '0640'
 
 - name: "Create {{ ingress_host }} inventory file"
   ansible.builtin.template:
     src: templates/host.yml.j2
     dest: "{{ playbook_dir }}/inventory/{{ ingress_host }}.yml"
+    mode: '0640'
