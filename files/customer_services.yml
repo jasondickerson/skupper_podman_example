@@ -10,4 +10,3 @@ services:
       - 8082
     hostPorts:
       - 8082
-
