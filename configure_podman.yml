@@ -42,4 +42,4 @@
     - name: Read subuid and subgid configuration into Podman
       ansible.builtin.command:
         cmd: "podman system migrate"
-
+      changed_when: true
