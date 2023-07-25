@@ -36,10 +36,10 @@
           loop:
             - subuid
             - subgid
-          register: update_subs
+          notify: Read subuid and subgid configuration into Podman
 
+  handlers:
     - name: Read subuid and subgid configuration into Podman
       ansible.builtin.command:
         cmd: "podman system migrate"
-      changed_when: true
-      when: update_subs.changed
+
